@@ -47,12 +47,14 @@ BloomFilter$methods(
 	# 	with each value less than `size`.
 	hashElement = function(element, hashes=3) {
 	  # wrapper to compute an index
-	  # to flip given a seed
+	  # to flip in our filter. It requires
+	  # a seed and allows for k-independent
+	  # hash function design
 	  .computeIndex = function(i) {
 	    return (
 	      as.numeric(
 	        paste0("0x", digest(element, algo="murmur32", seed=i))
-	        ) %% .self$size
+	        ) %% .self$size # use modulus to map to size of filter
 	     )
 	  }
 	  return (

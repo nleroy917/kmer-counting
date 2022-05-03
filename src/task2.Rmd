@@ -7,20 +7,24 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
 source("countKmers.R")
 ```
 
 ## Task 2
 
-```{r collect data}
+```{r read files}
 # read in files
 files <- list.files(
-  path="fasta", 
+  path="../fasta", 
   pattern="*.fa", 
   full.names=TRUE,
   recursive=FALSE
 )
+```
 
+```{r counts}
 # construct matrix and replace all NA
 # with 0's
 counts.frame = data.frame()
@@ -32,7 +36,9 @@ for (file in files) {
   counts.frame <- bind_rows(counts.frame, countKmers(.readFasta(file), 4))
 }
 counts.frame[is.na(counts.frame)] <- 0
+```
 
+```{r plot PCA}
 # run PCA
 pc <- prcomp(
   counts.frame,
@@ -40,6 +46,15 @@ pc <- prcomp(
   scale=TRUE
 )
 
-ggplot(as.data.frame(pc$x), aes(x=PC1, y=PC2)) + geom_point()
+ggplot(as.data.frame(pc$x), aes(x=PC1, y=PC2)) + 
+geom_point(color="blue") + 
+theme_classic() + 
+  theme(
+    axis.text=element_text(size=14),
+    axis.title=element_text(size=14,face="bold"),
+    panel.border = element_rect(
+      color = "black", fill = NA, size = 2
+    )
+  )
 ```
 
